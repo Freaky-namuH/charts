@@ -23,7 +23,7 @@ serviceAccounts:
 alertmanager:
   ## If false, alertmanager will not be installed
   ##
-  enabled: true
+  enabled: false
 
   ## alertmanager container name
   ##
@@ -503,7 +503,7 @@ server:
     ## If true, Prometheus server will create/use a Persistent Volume Claim
     ## If false, use emptyDir
     ##
-    enabled: true
+    enabled: false
 
     ## Prometheus server data Persistent Volume access modes
     ## Must match those of existing PV or dynamic provisioner
@@ -574,7 +574,8 @@ server:
     loadBalancerIP: ""
     loadBalancerSourceRanges: []
     servicePort: 80
-    type: ClusterIP
+    type: NodePort
+    nodePort: 30078
 
   ## Prometheus server pod termination grace period
   ##
@@ -587,7 +588,7 @@ server:
 pushgateway:
   ## If false, pushgateway will not be installed
   ##
-  enabled: true
+  enabled: false
 
   ## pushgateway container name
   ##
@@ -958,6 +959,20 @@ serverFiles:
           - source_labels: [__meta_kubernetes_pod_name]
             action: replace
             target_label: kubernetes_pod_name
+
+      - job_name: 'spring-boot'
+        metrics_path: '/actuator/prometheus'
+        consul_sd_configs:
+          - server: 10.196.22.1:32085
+        relabel_configs:
+          - source_labels: [__meta_consul_tags]
+            regex: .*,spring-boot,.*
+            action: keep
+          - source_labels: [__meta_consul_service]
+            target_label: job
+          - source_labels: [__meta_consul_service]
+            target_label: application
+
 
 networkPolicy:
   ## Enable creation of NetworkPolicy resources.

@@ -28,8 +28,9 @@ downloadDashboardsImage:
 ## ref: http://kubernetes.io/docs/user-guide/services/
 ##
 service:
-  type: ClusterIP
+  type: NodePort 
   port: 80
+  nodePort: 30079
   annotations: {}
   labels: {}
 
@@ -83,7 +84,7 @@ persistence:
   # existingClaim:
 
 adminUser: admin
-# adminPassword: strongpassword
+adminPassword: admin
 
 
 ## Extra environment variables that will be pass onto deployment pods
